@@ -15,6 +15,11 @@ Proposito: Un framebuffer simple para pintar un punto con modificaciones simples
 #struc pack
 # wikipedia bmp file format
 import struct
+from collections import namedtuple
+from obj import Obj
+
+V2 = namedtuple('Vertex2', ['x', 'y'])
+V3 = namedtuple('Vertex3', ['x', 'y', 'z'])
 #opcion = 0
 def char(c):
     # un char que vale un caracter de tipo string
@@ -93,13 +98,15 @@ class Render(object):
         position = ((placement + 1) * (self.viewPortHeight/2) + self.yPort) if ycardinal else ((placement+1) * (self.viewPortWidth/2) + self.xPort)
         return round(position)
 
-    def Line(self,x1,y1,x2,y2):
-        x1 = self.glLine(x1)
-        x2 = self.glLine(x2)
-        y1 = self.glLine(y1,True)
-        y2 = self.glLine(y2,True)
     
-
+    def Line(self,x1,y1,x2,y2):
+        #Da error con multiples puntos y salen del index si los metemeos a glLine
+       # x1 = self.glLine(x1)
+       # x2 = self.glLine(x2)
+       # y1 = self.glLine(y1,True)
+       # y2 = self.glLine(y2,True)
+    
+        #El steep es la direccion de la recta
         steep = abs(y2 - y1) > abs(x2 - x1)
 
         if steep:
@@ -112,8 +119,9 @@ class Render(object):
 
         dy = abs(y2 - y1)
         dx = abs(x2 - x1)
-
+        #Es una resta con el punto original para determinar su coordenada
         offset = 0
+        #El limite de la pendiente
         threshold = dx
 
         y = y1
@@ -128,8 +136,83 @@ class Render(object):
             if offset >= threshold:
                 y += 1 if y1 < y2 else -1
                 threshold += dx*2
-    
 
+    def triangle(self, A, B, C):
+        if A.y > B.y:
+           A, B = B, A
+        if A.y > C.y:
+         A, C = C, A
+        if B.y > C.y:
+            B, C = C, B
+
+        dx_ac = C.x - A.x
+        dy_ac = C.y - A.y
+        if dy_ac == 0:
+            return
+        mi_ac = dx_ac/dy_ac
+
+        dx_ab = B.x - A.x
+        dy_ab = B.y - A.y
+        if dy_ab != 0:
+            mi_ab = dx_ab/dy_ab
+
+            for y in range(A.y, B.y + 1):
+                xi = round(A.x - mi_ac * (A.y - y))
+                xf = round(A.x - mi_ab * (A.y - y))
+
+                if xi > xf:
+                    xi, xf = xf, xi
+                for x in range(xi, xf + 1):
+                    self.point(x, y)
+
+        dx_bc = C.x - B.x
+        dy_bc = C.y - B.y
+        if dy_bc:
+            mi_bc = dx_bc/dy_bc
+
+            for y in range(B.y, C.y + 1):
+                xi = round(A.x - mi_ac * (A.y - y))
+                xf = round(B.x - mi_bc * (B.y - y))
+
+                if xi > xf:
+                    xi, xf = xf, xi
+                for x in range(xi, xf + 1):
+                    self.point(x, y)
+
+    def drawPolygon(self, points):
+        iterations = len(points)
+        for i in range(iterations):
+            v0 = points[i]
+            v1 = points[(i+1)%iterations]
+            self.Line(v0[0], v0[1], v1[0], v1[1]) 
+
+    def inundation(self, x, y, color1, color2):
+        self.current_color = self.framebuffer[y][x]
+        if (self.current_color != color1 and self.current_color != color2):
+            self.point(x,y)
+            self.inundation(x+1,y,color1,color2)
+            self.inundation(x,y+1,color1,color2)
+            self.inundation(x-1,y,color1,color2)
+            self.inundation(x,y-1,color1,color2)
+
+    def load(self, filename, translate, scale):
+        model = Obj(filename)
+
+        for face in model.faces:
+            vcount = len(face)
+            for j in range(vcount):
+             vi1 = face[j][0] - 1
+             vi2 = face[(j+1) % vcount][0] - 1 
+
+            v1 = model.vertices[vi1]
+            v2 = model.vertices[vi2]
+            #x1 = round((v1[0] *scale[0]) + translate[0])
+            x1 = round((v1[0] + translate[0]) * scale[0])
+            y1 = round((v1[1] + translate[1]) * scale[1])
+            x2 = round((v2[0] + translate[0]) * scale[0])
+            y2 = round((v2[1] + translate[1]) * scale[1])
+
+            self.Line(x1,y1, x2, y2)
             
     def glFinish(self, filename):
         f = open(filename, 'bw')
@@ -164,57 +247,3 @@ class Render(object):
                 f.write(self.framebuffer[x][y])
         f.close()
 
-
-
-
-
-
-
-#bitmap es el producto final, debo hacer un  menu completo 
-# 128, 64
-
-
-"""
-    def Line(self,x0,y0,x1,y1):
-        #self.x0 = x0
-        #self.x1 = x1
-        #self.y0 = y0
-        #self.y1 = y1
-        #dy = abs(y1 - y0)
-        #dx = abs(x1 - x0)
-        #dy > dx
-        #El steep es la direccion de la recta
-        steep = abs(y1 - y0) > abs(x1 - x0)
-        if steep:
-            x0, y0 = y0, x0
-            x1, y1 = y1, x1
-        if x0 > x1:
-            x0, x1 = x1, x0
-            y0, y1 = y1, y0
-        
-        dy = abs(y1 - y0)
-        dx = abs(x1 - x0)
-        #Es una resta con el punto original para determinar su coordenada
-        offset  = 0
-        #El limite de la pendiente
-        threshold = dx 
-       
-        y = y0
-        # y = y1 - m * (x1 - x)
-        for x in range(x0, x1):
-
-            #self.point(self.y,self.x)
-            
-            if steep:
-                 #render.point(round(x), round(y))
-                self.point(y, x)
-
-            else:
-                #render.point(x), round(y))
-                self.point(x,y)
-                
-            offset += dy * 2
-            if offset >= threshold:
-                y += 1 if y0 < y1 else -1
-                threshold += dx * 2
-"""
