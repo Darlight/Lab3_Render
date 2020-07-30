@@ -246,3 +246,8 @@ class Render(object):
                 f.write(self.framebuffer[x][y])
         f.close()
 
+bitmap = Render()
+bitmap.glCreateWindow()
+print(bitmap.glInit())
+bitmap.load('./zack.obj', (10,10),(10,10))
+bitmap.glFinish('output.bmp')
