@@ -16,5 +16,5 @@ from obj import Obj
 bitmap = Render()
 bitmap.glCreateWindow()
 print(bitmap.glInit())
-bitmap.load('./Models/zack.obj', (10,10),(10,10))
+bitmap.load('./Models/face.obj', (10,10),(10,10))
 bitmap.glFinish('output.bmp')

@@ -199,6 +199,7 @@ class Render(object):
         model = Obj(filename)
         for face in model.faces:
             vcount = len(face)
+
             for j in range(vcount):
              vi1 = face[j][0] - 1
              vi2 = face[(j+1) % vcount][0] - 1 
@@ -206,10 +207,10 @@ class Render(object):
             v1 = model.vertices[vi1]
             v2 = model.vertices[vi2]
             #x1 = round((v1[0] *scale[0]) + translate[0])
-            x1 = round((v1[0] + translate[0]) * scale[0])
-            y1 = round((v1[1] + translate[1]) * scale[1])
-            x2 = round((v2[0] + translate[0]) * scale[0])
-            y2 = round((v2[1] + translate[1]) * scale[1])
+            x1 = round((v1[0] + scale[0]) * translate[0])
+            y1 = round((v1[1] + scale[1]) * translate[1])
+            x2 = round((v2[0] + scale[0]) * translate[0])
+            y2 = round((v2[1] + scale[1]) * translate[1])
 
             self.Line(x1,y1, x2, y2)
             
@@ -246,8 +247,3 @@ class Render(object):
                 f.write(self.framebuffer[x][y])
         f.close()
 
-bitmap = Render()
-bitmap.glCreateWindow()
-print(bitmap.glInit())
-bitmap.load('./zack.obj', (10,10),(10,10))
-bitmap.glFinish('output.bmp')
