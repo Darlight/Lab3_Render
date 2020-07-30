@@ -12,7 +12,7 @@ Proposito: Clase objeto que carga archivos .obj
 class Obj(object):
     def __init__(self,filename):
         with open(filename) as f:
-            self. lines = f.read().splitlines()
+            self.lines = f.read().splitlines()
             self.vertices = []
             self.faces = []
             self.read()
@@ -22,7 +22,6 @@ class Obj(object):
         for line in self.lines:
                 if line:
                     prefix, value = line.split(' ', 1)
-
                     if prefix == 'v': # vertices
                         self.vertices.append(list(map(float,value.split(' '))))
                     elif prefix == 'f':
