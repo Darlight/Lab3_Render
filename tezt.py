@@ -197,7 +197,6 @@ class Render(object):
 
     def load(self, filename, translate, scale):
         model = Obj(filename)
-
         for face in model.faces:
             vcount = len(face)
             for j in range(vcount):
