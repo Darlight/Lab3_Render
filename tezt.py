@@ -206,6 +206,7 @@ class Render(object):
 
              v1 = model.vertices[vi1]
              v2 = model.vertices[vi2]
+             
              x1 = round((v1[0] + scale[0]) * translate[0])
              y1 = round((v1[1] + scale[1]) * translate[1])
              x2 = round((v2[0] + scale[0]) * translate[0])

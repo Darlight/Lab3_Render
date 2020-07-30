@@ -16,5 +16,5 @@ from obj import Obj
 bitmap = Render()
 bitmap.glCreateWindow()
 print(bitmap.glInit())
-bitmap.load('./Models/face.obj', (10,10),(10,10))
+bitmap.load('./Models/face.obj', (15,15),(15,10))
 bitmap.glFinish('output.bmp')
