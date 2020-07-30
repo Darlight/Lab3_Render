@@ -199,10 +199,9 @@ class Render(object):
         model = Obj(filename)
         for face in model.faces:
             vcount = len(face)
-
-            for j in range(vcount):
-             vi1 = face[j][0] - 1
-             vi2 = face[(j+1) % vcount][0] - 1 
+        for j in range(vcount):
+            vi1 = face[j][0] - 1
+            vi2 = face[(j+1) % vcount][0] - 1 
 
             v1 = model.vertices[vi1]
             v2 = model.vertices[vi2]

@@ -23,6 +23,7 @@ class Obj(object):
         for line in self.lines:
                 if line:
                     prefix, value = line.split(' ', 1)
+
                     if prefix == 'v': # vertices
                         self.vertices.append(list(map(float,value.split(' '))))
                     elif prefix == 'f': # Faces
