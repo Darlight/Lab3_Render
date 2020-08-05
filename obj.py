@@ -11,7 +11,7 @@ Proposito: Clase objeto que carga archivos .obj
 """
 class Obj(object):
     def __init__(self,filename):
-        with open(filename) as f:
+        with open(filename, 'r') as f:
             self.lines = f.read().splitlines()
 
         self.vertices = []
