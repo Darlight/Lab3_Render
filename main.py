@@ -28,7 +28,7 @@ cwd = os.getcwd()
 dir_path = os.path.dirname(os.path.realpath( __file__))
 model_path = os.path.join(dir_path, r'Models\face.obj')
 print(model_path)
-filename = Path("./Models/wario.obj")
+
 bitmap = Render()
 bitmap.glCreateWindow()
 print(bitmap.glInit())
